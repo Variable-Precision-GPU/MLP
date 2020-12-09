@@ -2,6 +2,7 @@
 #include <cublas_v2.h>
 #include <omp.h>
 
+#include <fstream>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -44,12 +45,12 @@ __host__ void __CudaCheckError(const char *file, const int line) {
 #endif
 }
 
-const int layers[] = {784, 128, 128, 10};
-const int num_layers = 4;
+const int layers[] = {784, 512, 10};
+const int num_layers = 3;
 const int num_classes = 10;
-const int num_epochs = 20;
-const float learning_rate = 1e-1;
-const int batch_size = 100;
+const int num_epochs = 500;
+const float learning_rate = 0.09;
+const int batch_size = 3000;
 
 float *weights;
 float *bias;
@@ -67,7 +68,7 @@ float *dJ_dz;
 float *dJ_dW;
 float *dJ_db;
 
-const int num_train_data = 60000;
+const int num_train_data = 10000;
 const int num_test_data = 10000;
 vector<int *> train_data;
 vector<int *> x_test;
@@ -78,10 +79,9 @@ cublasHandle_t cu_handle;
 const float alpha = 1.0f;
 const float beta = 0.0f;
 
-void ReadDataset(const char *training_file, const char *testing_file)
+void ReadTrainDataset(const char *training_file)
 {
     FILE *train_file = fopen(training_file, "r");
-    FILE *test_file = fopen(testing_file, "r");
 
     train_data = vector<int *>(num_train_data);
     for (int i = 0; i < num_train_data; i++) {
@@ -90,6 +90,19 @@ void ReadDataset(const char *training_file, const char *testing_file)
         for (int j = 1; j < layers[0] + 1; j++)
             fscanf(train_file, ",%d", &train_data[i][j]);
     }
+
+    fclose(train_file);
+}
+
+void FreeTrainMemory() {
+  for (int i = 0; i < num_train_data; i++) {
+    delete[] train_data[i];
+  }
+}
+
+void ReadTestDataset(const char *testing_file)
+{
+    FILE *test_file = fopen(testing_file, "r");
 
     x_test = vector<int *>(num_test_data);
     y_test = vector<int>(num_test_data);
@@ -100,8 +113,71 @@ void ReadDataset(const char *training_file, const char *testing_file)
             fscanf(test_file, ",%d", &x_test[i][j]);
     }
 
-    fclose(train_file);
     fclose(test_file);
+}
+
+void FreeTestMemory() {
+  for (int i = 0; i < num_test_data; i++) {
+    delete[] x_test[i];
+  }
+}
+
+void WriteWeights(const char *weights_file)
+{
+    std::ofstream file(weights_file);
+
+    // [afterdusk] stateful global variables used: weights, bias
+    float *ws  = new float[num_weights];
+    float *bs = new float[num_bias];
+
+    CudaSafeCall(cudaMemcpy(ws, weights, num_weights * sizeof(float), cudaMemcpyDeviceToHost));
+    CudaSafeCall(cudaMemcpy(bs, bias, num_bias * sizeof(float), cudaMemcpyDeviceToHost));
+
+    file << num_weights << " " << num_bias << "\n";
+    for (int i = 0; i < num_weights; i++) {
+        file << std::fixed << ws[i] << "\n";
+    }
+    for (int i = 0; i < num_bias; i++) {
+        file << std::fixed << bs[i] << "\n";
+    }
+
+    delete[] ws;
+    delete[] bs;
+}
+
+void ReadWeights(const char *weights_file)
+{
+    FILE *file = fopen(weights_file, "r");
+
+    fscanf(file, "%d", &num_weights);
+    fscanf(file, "%d", &num_bias);
+
+    float *ws  = new float[num_weights];
+    float *bs = new float[num_bias];
+    for (int i = 0; i < num_weights; i++) {
+        fscanf(file, "%f", &ws[i]);
+    }
+    for (int i = 0; i < num_bias; i++) {
+        fscanf(file, "%f", &bs[i]);
+    }
+
+    CudaSafeCall(cudaMalloc(&weights, num_weights * sizeof(float)));
+    CudaSafeCall(cudaMalloc(&bias, num_bias * sizeof(float)));
+
+    CudaSafeCall(cudaMemcpy(weights, ws, num_weights * sizeof(float), cudaMemcpyHostToDevice));
+    CudaSafeCall(cudaMemcpy(bias, bs, num_bias * sizeof(float), cudaMemcpyHostToDevice));
+
+    fclose(file);
+
+    delete[] ws;
+    delete[] bs;
+
+    int num_activations = 0;
+    for (int i = 0; i < num_layers; i++)
+        num_activations += batch_size * layers[i];
+    CudaSafeCall(cudaMalloc(&zs, num_activations * sizeof(float)));
+    CudaSafeCall(cudaMalloc(&as, num_activations * sizeof(float)));
+    CudaSafeCall(cudaMalloc(&p, batch_size * num_classes * sizeof(float)));
 }
 
 void InitializeWeights()
@@ -129,6 +205,9 @@ void InitializeWeights()
 
     CudaSafeCall(cudaMemcpy(weights, ws, num_weights * sizeof(float), cudaMemcpyHostToDevice));
     CudaSafeCall(cudaMemcpy(bias, bs, num_bias * sizeof(float), cudaMemcpyHostToDevice));
+
+    delete[] ws;
+    delete[] bs;
 }
 
 void Init()
@@ -358,7 +437,8 @@ void Backpropagation()
         CudaSafeCall(cudaDeviceSynchronize());
 */
         WeightBiasDerivative <<< layers[n - 1], layers[n] >>> (dJ_dW + dJdW_offset, dJ_db + dJdb_offset, dJ_dz + dJdz_offset, batch_size);
-
+        CudaCheckError();
+        CudaSafeCall(cudaDeviceSynchronize());
         error_check(cublasSgemm(cu_handle, CUBLAS_OP_T, CUBLAS_OP_N, layers[n - 1], batch_size, layers[n],
                     &alpha, weights + dJdW_offset, layers[n], dJ_dz + dJdz_offset, layers[n - 1],
                     &beta, dJ_da + dJda_offset, layers[n - 1]));
@@ -438,6 +518,9 @@ void Train()
         epoch_loss /= num_batches;
         printf("Epoch %3d, loss=%.6f\n", epoch, epoch_loss);
     }
+    delete[] x_batch;
+    delete[] y_batch;
+    delete[] h_p;
 }
 
 void Test()
@@ -460,22 +543,48 @@ void Test()
     }
 
     printf("Test Accuracy: %.6f\n", (float)acc / num_test_data);
+    delete[] x_batch;
+    delete[] h_p;
 }
 
 int main(int argc, char *argv[])
 {
-    assert(argc == 3 && "Require 2 arguments.");
+    // assert(argc == 4 && "Require 3 arguments.");
+    assert(argc > 3);
     srand(time(0));
     cublasCreate(&cu_handle);
 
-    ReadDataset(argv[1], argv[2]);
+    if (strcmp(argv[1], "-train") == 0) {
+        ReadTrainDataset(argv[2]);
 
-    InitializeWeights();
-    Init();
+        InitializeWeights();
+        Init();
 
-    Train();
+        Train();
+        FreeTrainMemory();
 
-    Test();
+        WriteWeights(argv[3]);
+    } else if (strcmp(argv[1], "-test") == 0) {
+        ReadTestDataset(argv[2]);
+
+        ReadWeights(argv[3]);
+
+        Test();
+        FreeTestMemory();
+    } else if (strcmp(argv[1], "-both") == 0) {
+        ReadTrainDataset(argv[2]);
+
+        InitializeWeights();
+        Init();
+
+        Train();
+        FreeTrainMemory();
+        ReadTestDataset(argv[3]);
+
+        Test();
+        FreeTestMemory();
+    }
+
 
     cublasDestroy(cu_handle);
 
