@@ -68,6 +68,8 @@ float *dJ_dz;
 float *dJ_dW;
 float *dJ_db;
 
+const char* training_data_file = "mnist_train.csv";
+const char* testing_data_file = "mnist_test.csv";
 const int num_train_data = 10000;
 const int num_test_data = 10000;
 vector<int *> train_data;
@@ -549,13 +551,13 @@ void Test()
 
 int main(int argc, char *argv[])
 {
-    // assert(argc == 4 && "Require 3 arguments.");
-    assert(argc > 3);
+    assert(argc > 1 && "Run with mode -both, -train or -test");
     srand(time(0));
     cublasCreate(&cu_handle);
 
     if (strcmp(argv[1], "-train") == 0) {
-        ReadTrainDataset(argv[2]);
+        assert(argc == 3 && "Please provide the weights file");
+        ReadTrainDataset(training_data_file);
 
         InitializeWeights();
         Init();
@@ -563,26 +565,29 @@ int main(int argc, char *argv[])
         Train();
         FreeTrainMemory();
 
-        WriteWeights(argv[3]);
+        WriteWeights(argv[2]);
     } else if (strcmp(argv[1], "-test") == 0) {
-        ReadTestDataset(argv[2]);
+        assert(argc == 3 && "Please provide the weights file");
+        ReadTestDataset(testing_data_file);
 
-        ReadWeights(argv[3]);
+        ReadWeights(argv[2]);
 
         Test();
         FreeTestMemory();
     } else if (strcmp(argv[1], "-both") == 0) {
-        ReadTrainDataset(argv[2]);
+        ReadTrainDataset(training_data_file);
 
         InitializeWeights();
         Init();
 
         Train();
         FreeTrainMemory();
-        ReadTestDataset(argv[3]);
+        ReadTestDataset(testing_data_file);
 
         Test();
         FreeTestMemory();
+    } else {
+        assert("Run with mode -both, -train or -test");
     }
 
 
