@@ -498,14 +498,14 @@ void PrepareBatchData(float *x_batch, float *y_batch, const int batch)
     CudaSafeCall(cudaMemcpy(y, y_batch, batch_size * num_classes * sizeof(float), cudaMemcpyHostToDevice));
 }
 
-void Train()
+void Train(int start_epoch, int end_epoch)
 {
     int num_batches = num_train_data / batch_size;
     float *x_batch = new float[batch_size * layers[0]];
     float *y_batch = new float[batch_size * num_classes];
     float *h_p = new float[batch_size * num_classes];
 
-    for (int epoch = 1; epoch <= num_epochs; epoch++) {
+    for (int epoch = start_epoch; epoch <= end_epoch; epoch++) {
         random_shuffle(train_data.begin(), train_data.end());
 
         float epoch_loss = 0.0;
@@ -556,16 +556,29 @@ int main(int argc, char *argv[])
     cublasCreate(&cu_handle);
 
     if (strcmp(argv[1], "-train") == 0) {
-        assert(argc == 3 && "Please provide the weights file");
+        assert(argc == 4 && "Please provide the number of epochs and weights file");
         ReadTrainDataset(training_data_file);
 
         InitializeWeights();
         Init();
 
-        Train();
+        Train(1, atoi(argv[2]));
         FreeTrainMemory();
 
-        WriteWeights(argv[2]);
+        WriteWeights(argv[3]);
+    } else if (strcmp(argv[1], "-train-increment") == 0) {
+        assert(argc == 6 && "Please provide the start epoch, end epoch, input weights file and output weights file");
+        ReadTrainDataset(training_data_file);
+
+        ReadWeights(argv[4]);
+        Init();
+
+        int start_epoch = atoi(argv[2]);
+        int end_epoch = atoi(argv[3]);
+        Train(start_epoch, end_epoch);
+        FreeTrainMemory();
+
+        WriteWeights(argv[5]);
     } else if (strcmp(argv[1], "-test") == 0) {
         assert(argc == 3 && "Please provide the weights file");
         ReadTestDataset(testing_data_file);
@@ -580,7 +593,7 @@ int main(int argc, char *argv[])
         InitializeWeights();
         Init();
 
-        Train();
+        Train(1, num_epochs);
         FreeTrainMemory();
         ReadTestDataset(testing_data_file);
 
