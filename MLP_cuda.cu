@@ -551,7 +551,7 @@ void Test()
 
 int main(int argc, char *argv[])
 {
-    assert(argc > 1 && "Run with mode -both, -train or -test");
+    assert(argc > 1 && "Run with mode -train, -train-increment or -test");
     srand(time(0));
     cublasCreate(&cu_handle);
 
@@ -587,22 +587,9 @@ int main(int argc, char *argv[])
 
         Test();
         FreeTestMemory();
-    } else if (strcmp(argv[1], "-both") == 0) {
-        ReadTrainDataset(training_data_file);
-
-        InitializeWeights();
-        Init();
-
-        Train(1, num_epochs);
-        FreeTrainMemory();
-        ReadTestDataset(testing_data_file);
-
-        Test();
-        FreeTestMemory();
     } else {
-        assert("Run with mode -both, -train or -test");
+        assert(0 && "Run with mode -train, -train-increment or -test");
     }
-
 
     cublasDestroy(cu_handle);
 
