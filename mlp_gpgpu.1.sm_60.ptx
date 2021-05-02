@@ -1,0 +1,528 @@
+
+
+
+
+
+
+
+
+.version 5.0
+.target sm_60
+.address_size 64
+
+
+.global .align 8 .b8 _ZTVSt9basic_iosIcSt11char_traitsIcEE[32];
+.global .align 8 .b8 _ZTTSo[8];
+.global .align 8 .b8 _ZTVSt15basic_streambufIcSt11char_traitsIcEE[128];
+.global .align 8 .b8 _ZTVSt13basic_filebufIcSt11char_traitsIcEE[128];
+.global .align 8 .b8 _ZTTSt14basic_ofstreamIcSt11char_traitsIcEE[8];
+
+.visible .entry _Z7SoftmaxPfPKfii(
+.param .u64 _Z7SoftmaxPfPKfii_param_0,
+.param .u64 _Z7SoftmaxPfPKfii_param_1,
+.param .u32 _Z7SoftmaxPfPKfii_param_2,
+.param .u32 _Z7SoftmaxPfPKfii_param_3
+)
+{
+.reg .pred %p<8>;
+.reg .f32 %f<23>;
+.reg .b32 %r<19>;
+.reg .b64 %rd<19>;
+
+
+ld.param.u64 %rd12, [_Z7SoftmaxPfPKfii_param_0];
+ld.param.u64 %rd11, [_Z7SoftmaxPfPKfii_param_1];
+ld.param.u32 %r9, [_Z7SoftmaxPfPKfii_param_2];
+ld.param.u32 %r8, [_Z7SoftmaxPfPKfii_param_3];
+cvta.to.global.u64 %rd1, %rd12;
+mov.u32 %r1, %ntid.x;
+mov.u32 %r2, %ctaid.x;
+mov.u32 %r3, %tid.x;
+mad.lo.s32 %r10, %r1, %r2, %r3;
+setp.ge.s32	%p1, %r10, %r9;
+@%p1 bra BB0_7;
+
+mov.f32 %f22, 0f00000000;
+setp.lt.s32	%p2, %r8, 1;
+@%p2 bra BB0_4;
+
+cvta.to.global.u64 %rd13, %rd11;
+mul.lo.s32 %r13, %r8, %r10;
+mul.wide.s32 %rd14, %r13, 4;
+add.s64 %rd17, %rd1, %rd14;
+add.s64 %rd16, %rd13, %rd14;
+mov.f32 %f22, 0f00000000;
+mov.u32 %r17, 0;
+
+BB0_3:
+ld.global.f32 %f8, [%rd16];
+mul.vf32 %f9, %f8, 0f3FB8AA3B;
+cvt.rzi.f32.f32	%f10, %f9;
+mov.f32 %f11, 0fBF317200;
+fma.rn.vf32 %f12, %f10, %f11, %f8;
+mov.f32 %f13, 0fB5BFBE8E;
+fma.rn.vf32 %f14, %f10, %f13, %f12;
+mul.vf32 %f7, %f14, 0f3FB8AA3B;
+
+	ex2.approx.ftz.f32 %f6,%f7;
+
+	add.vf32 %f15, %f10, 0f00000000;
+ex2.approx.f32 %f16, %f15;
+mul.vf32 %f17, %f6, %f16;
+setp.lt.f32	%p3, %f8, 0fC2D20000;
+selp.f32	%f18, 0f00000000, %f17, %p3;
+setp.gt.f32	%p4, %f8, 0f42D20000;
+selp.f32	%f19, 0f7F800000, %f18, %p4;
+st.global.f32 [%rd17], %f19;
+add.vf32 %f22, %f22, %f19;
+add.s64 %rd17, %rd17, 4;
+add.s64 %rd16, %rd16, 4;
+add.s32 %r17, %r17, 1;
+setp.lt.s32	%p5, %r17, %r8;
+@%p5 bra BB0_3;
+
+BB0_4:
+@%p2 bra BB0_7;
+
+mul.lo.s32 %r16, %r8, %r10;
+mul.wide.s32 %rd15, %r16, 4;
+add.s64 %rd18, %rd1, %rd15;
+mov.u32 %r18, 0;
+
+BB0_6:
+ld.global.f32 %f20, [%rd18];
+div.rn.f32 %f21, %f20, %f22;
+st.global.f32 [%rd18], %f21;
+add.s64 %rd18, %rd18, 4;
+add.s32 %r18, %r18, 1;
+setp.lt.s32	%p7, %r18, %r8;
+@%p7 bra BB0_6;
+
+BB0_7:
+ret;
+}
+
+
+.visible .entry _Z14BiasActivationPfS_PKf(
+.param .u64 _Z14BiasActivationPfS_PKf_param_0,
+.param .u64 _Z14BiasActivationPfS_PKf_param_1,
+.param .u64 _Z14BiasActivationPfS_PKf_param_2
+)
+{
+.reg .pred %p<3>;
+.reg .f32 %f<19>;
+.reg .b32 %r<5>;
+.reg .f64 %fd<4>;
+.reg .b64 %rd<12>;
+
+
+ld.param.u64 %rd1, [_Z14BiasActivationPfS_PKf_param_0];
+ld.param.u64 %rd2, [_Z14BiasActivationPfS_PKf_param_1];
+ld.param.u64 %rd3, [_Z14BiasActivationPfS_PKf_param_2];
+cvta.to.global.u64 %rd4, %rd2;
+cvta.to.global.u64 %rd5, %rd1;
+cvta.to.global.u64 %rd6, %rd3;
+mov.u32 %r1, %ctaid.x;
+mov.u32 %r2, %ntid.x;
+mov.u32 %r3, %tid.x;
+mad.lo.s32 %r4, %r2, %r1, %r3;
+mul.wide.u32 %rd7, %r3, 4;
+add.s64 %rd8, %rd6, %rd7;
+ld.global.f32 %f3, [%rd8];
+mul.wide.s32 %rd9, %r4, 4;
+add.s64 %rd10, %rd5, %rd9;
+ld.global.f32 %f4, [%rd10];
+add.vf32 %f5, %f3, %f4;
+st.global.f32 [%rd10], %f5;
+neg.f32 %f6, %f5;
+mul.vf32 %f7, %f5, 0fBFB8AA3B;
+cvt.rzi.f32.f32	%f8, %f7;
+mov.f32 %f9, 0fBF317200;
+fma.rn.vf32 %f10, %f8, %f9, %f6;
+mov.f32 %f11, 0fB5BFBE8E;
+fma.rn.vf32 %f12, %f8, %f11, %f10;
+mul.vf32 %f2, %f12, 0f3FB8AA3B;
+
+	ex2.approx.ftz.f32 %f1,%f2;
+
+	add.vf32 %f13, %f8, 0f00000000;
+ex2.approx.f32 %f14, %f13;
+mul.vf32 %f15, %f1, %f14;
+setp.gt.f32	%p1, %f5, 0f42D20000;
+setp.lt.f32	%p2, %f5, 0fC2D20000;
+cvt.f64.f32	%fd1, %f15;
+add.f64 %fd2, %fd1, 0d3FF0000000000000;
+rcp.rn.f64 %fd3, %fd2;
+cvt.rn.f32.f64	%f16, %fd3;
+selp.f32	%f17, 0f3F800000, %f16, %p1;
+selp.f32	%f18, 0f00000000, %f17, %p2;
+add.s64 %rd11, %rd4, %rd9;
+st.global.f32 [%rd11], %f18;
+ret;
+}
+
+
+.visible .entry _Z14dJdaChainRulesPfS_PKfS1_(
+.param .u64 _Z14dJdaChainRulesPfS_PKfS1__param_0,
+.param .u64 _Z14dJdaChainRulesPfS_PKfS1__param_1,
+.param .u64 _Z14dJdaChainRulesPfS_PKfS1__param_2,
+.param .u64 _Z14dJdaChainRulesPfS_PKfS1__param_3
+)
+{
+.reg .pred %p<4>;
+.reg .f32 %f<11>;
+.reg .b32 %r<20>;
+.reg .b64 %rd<22>;
+
+
+ld.param.u64 %rd8, [_Z14dJdaChainRulesPfS_PKfS1__param_0];
+ld.param.u64 %rd7, [_Z14dJdaChainRulesPfS_PKfS1__param_1];
+ld.param.u64 %rd9, [_Z14dJdaChainRulesPfS_PKfS1__param_2];
+ld.param.u64 %rd10, [_Z14dJdaChainRulesPfS_PKfS1__param_3];
+mov.u32 %r1, %ntid.x;
+mov.u32 %r2, %ctaid.x;
+mov.u32 %r3, %tid.x;
+mad.lo.s32 %r4, %r1, %r2, %r3;
+cvta.to.global.u64 %rd11, %rd9;
+mul.wide.s32 %rd12, %r4, 4;
+add.s64 %rd13, %rd11, %rd12;
+ld.global.f32 %f2, [%rd13];
+neg.f32 %f3, %f2;
+cvta.to.global.u64 %rd1, %rd10;
+add.s64 %rd2, %rd1, %rd12;
+ld.global.f32 %f4, [%rd2];
+div.rn.f32 %f5, %f3, %f4;
+cvta.to.global.u64 %rd14, %rd8;
+add.s64 %rd15, %rd14, %rd12;
+st.global.f32 [%rd15], %f5;
+setp.lt.s32	%p1, %r1, 1;
+@%p1 bra BB2_6;
+
+cvta.to.global.u64 %rd16, %rd7;
+mad.lo.s32 %r14, %r4, %r1, %r3;
+mul.wide.s32 %rd17, %r14, 4;
+add.s64 %rd3, %rd16, %rd17;
+neg.s32 %r18, %r3;
+mul.lo.s32 %r17, %r1, %r2;
+add.s32 %r15, %r3, %r17;
+mul.lo.s32 %r16, %r1, %r15;
+mul.wide.s32 %rd18, %r16, 4;
+add.s64 %rd21, %rd16, %rd18;
+mov.u32 %r19, 0;
+
+BB2_2:
+ld.global.f32 %f1, [%rd2];
+setp.eq.s32	%p2, %r18, 0;
+@%p2 bra BB2_4;
+bra.uni BB2_3;
+
+BB2_4:
+mul.vf32 %f9, %f1, %f1;
+sub.f32 %f10, %f1, %f9;
+st.global.f32 [%rd3], %f10;
+bra.uni BB2_5;
+
+BB2_3:
+mul.wide.u32 %rd19, %r17, 4;
+add.s64 %rd20, %rd1, %rd19;
+ld.global.f32 %f6, [%rd20];
+mul.vf32 %f7, %f1, %f6;
+neg.f32 %f8, %f7;
+st.global.f32 [%rd21], %f8;
+
+BB2_5:
+add.s32 %r19, %r19, 1;
+add.s32 %r18, %r18, 1;
+add.s32 %r17, %r17, 1;
+add.s64 %rd21, %rd21, 4;
+setp.lt.s32	%p3, %r19, %r1;
+@%p3 bra BB2_2;
+
+BB2_6:
+ret;
+}
+
+
+.visible .entry _Z14dJdzDerivativePfPKfS1_(
+.param .u64 _Z14dJdzDerivativePfPKfS1__param_0,
+.param .u64 _Z14dJdzDerivativePfPKfS1__param_1,
+.param .u64 _Z14dJdzDerivativePfPKfS1__param_2
+)
+{
+.reg .f32 %f<5>;
+.reg .b32 %r<5>;
+.reg .f64 %fd<5>;
+.reg .b64 %rd<11>;
+
+
+ld.param.u64 %rd1, [_Z14dJdzDerivativePfPKfS1__param_0];
+ld.param.u64 %rd2, [_Z14dJdzDerivativePfPKfS1__param_1];
+ld.param.u64 %rd3, [_Z14dJdzDerivativePfPKfS1__param_2];
+cvta.to.global.u64 %rd4, %rd1;
+cvta.to.global.u64 %rd5, %rd3;
+cvta.to.global.u64 %rd6, %rd2;
+mov.u32 %r1, %ctaid.x;
+mov.u32 %r2, %ntid.x;
+mov.u32 %r3, %tid.x;
+mad.lo.s32 %r4, %r2, %r1, %r3;
+mul.wide.s32 %rd7, %r4, 4;
+add.s64 %rd8, %rd6, %rd7;
+ld.global.f32 %f1, [%rd8];
+add.s64 %rd9, %rd5, %rd7;
+ld.global.f32 %f2, [%rd9];
+cvt.f64.f32	%fd1, %f2;
+mov.f64 %fd2, 0d3FF0000000000000;
+sub.f64 %fd3, %fd2, %fd1;
+mul.f64 %fd4, %fd1, %fd3;
+cvt.rn.f32.f64	%f3, %fd4;
+mul.vf32 %f4, %f1, %f3;
+add.s64 %rd10, %rd4, %rd7;
+st.global.f32 [%rd10], %f4;
+ret;
+}
+
+
+.visible .entry _Z15DivideBatchSizePfi(
+.param .u64 _Z15DivideBatchSizePfi_param_0,
+.param .u32 _Z15DivideBatchSizePfi_param_1
+)
+{
+.reg .f32 %f<4>;
+.reg .b32 %r<6>;
+.reg .b64 %rd<5>;
+
+
+ld.param.u64 %rd1, [_Z15DivideBatchSizePfi_param_0];
+ld.param.u32 %r1, [_Z15DivideBatchSizePfi_param_1];
+cvta.to.global.u64 %rd2, %rd1;
+mov.u32 %r2, %ctaid.x;
+mov.u32 %r3, %ntid.x;
+mov.u32 %r4, %tid.x;
+mad.lo.s32 %r5, %r3, %r2, %r4;
+mul.wide.s32 %rd3, %r5, 4;
+add.s64 %rd4, %rd2, %rd3;
+ld.global.f32 %f1, [%rd4];
+cvt.rn.f32.s32	%f2, %r1;
+div.rn.f32 %f3, %f1, %f2;
+st.global.f32 [%rd4], %f3;
+ret;
+}
+
+
+.visible .entry _Z14BiasDerivativePfPKfii(
+.param .u64 _Z14BiasDerivativePfPKfii_param_0,
+.param .u64 _Z14BiasDerivativePfPKfii_param_1,
+.param .u32 _Z14BiasDerivativePfPKfii_param_2,
+.param .u32 _Z14BiasDerivativePfPKfii_param_3
+)
+{
+.reg .pred %p<4>;
+.reg .f32 %f<12>;
+.reg .b32 %r<12>;
+.reg .b64 %rd<12>;
+
+
+ld.param.u64 %rd3, [_Z14BiasDerivativePfPKfii_param_0];
+ld.param.u64 %rd4, [_Z14BiasDerivativePfPKfii_param_1];
+ld.param.u32 %r4, [_Z14BiasDerivativePfPKfii_param_2];
+ld.param.u32 %r5, [_Z14BiasDerivativePfPKfii_param_3];
+mov.u32 %r6, %ntid.x;
+mov.u32 %r7, %ctaid.x;
+mov.u32 %r8, %tid.x;
+mad.lo.s32 %r1, %r6, %r7, %r8;
+setp.ge.s32	%p1, %r1, %r4;
+@%p1 bra BB5_4;
+
+cvta.to.global.u64 %rd1, %rd4;
+cvt.s64.s32	%rd2, %r1;
+mov.f32 %f10, 0f00000000;
+mov.f32 %f11, %f10;
+mov.u32 %r11, 0;
+setp.lt.s32	%p2, %r5, 1;
+@%p2 bra BB5_3;
+
+BB5_2:
+mul.lo.s32 %r10, %r11, %r4;
+cvt.s64.s32	%rd5, %r10;
+add.s64 %rd6, %rd5, %rd2;
+shl.b64 %rd7, %rd6, 2;
+add.s64 %rd8, %rd1, %rd7;
+ld.global.f32 %f6, [%rd8];
+add.vf32 %f11, %f11, %f6;
+add.s32 %r11, %r11, 1;
+setp.lt.s32	%p3, %r11, %r5;
+mov.f32 %f10, %f11;
+@%p3 bra BB5_2;
+
+BB5_3:
+cvta.to.global.u64 %rd9, %rd3;
+cvt.rn.f32.s32	%f7, %r5;
+div.rn.f32 %f8, %f10, %f7;
+shl.b64 %rd10, %rd2, 2;
+add.s64 %rd11, %rd9, %rd10;
+st.global.f32 [%rd11], %f8;
+
+BB5_4:
+ret;
+}
+
+
+.visible .entry _Z20WeightBiasDerivativePfS_PKfi(
+.param .u64 _Z20WeightBiasDerivativePfS_PKfi_param_0,
+.param .u64 _Z20WeightBiasDerivativePfS_PKfi_param_1,
+.param .u64 _Z20WeightBiasDerivativePfS_PKfi_param_2,
+.param .u32 _Z20WeightBiasDerivativePfS_PKfi_param_3
+)
+{
+.reg .pred %p<4>;
+.reg .f32 %f<14>;
+.reg .b32 %r<11>;
+.reg .b64 %rd<16>;
+
+
+ld.param.u64 %rd5, [_Z20WeightBiasDerivativePfS_PKfi_param_0];
+ld.param.u64 %rd3, [_Z20WeightBiasDerivativePfS_PKfi_param_1];
+ld.param.u64 %rd4, [_Z20WeightBiasDerivativePfS_PKfi_param_2];
+ld.param.u32 %r5, [_Z20WeightBiasDerivativePfS_PKfi_param_3];
+mov.u32 %r1, %ntid.x;
+mov.u32 %r6, %ctaid.x;
+mov.u32 %r2, %tid.x;
+mad.lo.s32 %r7, %r1, %r6, %r2;
+cvta.to.global.u64 %rd6, %rd5;
+mul.wide.s32 %rd7, %r7, 4;
+add.s64 %rd8, %rd6, %rd7;
+cvt.rn.f32.s32	%f1, %r5;
+ld.global.f32 %f5, [%rd8];
+div.rn.f32 %f6, %f5, %f1;
+st.global.f32 [%rd8], %f6;
+setp.ne.s32	%p1, %r6, 0;
+@%p1 bra BB6_4;
+
+cvta.to.global.u64 %rd1, %rd4;
+cvt.u64.u32	%rd2, %r2;
+mov.f32 %f12, 0f00000000;
+mov.f32 %f13, %f12;
+mov.u32 %r10, 0;
+setp.lt.s32	%p2, %r5, 1;
+@%p2 bra BB6_3;
+
+BB6_2:
+mul.lo.s32 %r9, %r10, %r1;
+cvt.s64.s32	%rd9, %r9;
+add.s64 %rd10, %rd9, %rd2;
+shl.b64 %rd11, %rd10, 2;
+add.s64 %rd12, %rd1, %rd11;
+ld.global.f32 %f9, [%rd12];
+add.vf32 %f13, %f13, %f9;
+add.s32 %r10, %r10, 1;
+setp.lt.s32	%p3, %r10, %r5;
+mov.f32 %f12, %f13;
+@%p3 bra BB6_2;
+
+BB6_3:
+cvta.to.global.u64 %rd13, %rd3;
+shl.b64 %rd14, %rd2, 2;
+add.s64 %rd15, %rd13, %rd14;
+div.rn.f32 %f10, %f12, %f1;
+st.global.f32 [%rd15], %f10;
+
+BB6_4:
+ret;
+}
+
+
+.visible .entry _Z13UpdateWeightsPfPKffi(
+.param .u64 _Z13UpdateWeightsPfPKffi_param_0,
+.param .u64 _Z13UpdateWeightsPfPKffi_param_1,
+.param .f32 _Z13UpdateWeightsPfPKffi_param_2,
+.param .u32 _Z13UpdateWeightsPfPKffi_param_3
+)
+{
+.reg .pred %p<2>;
+.reg .f32 %f<6>;
+.reg .b32 %r<6>;
+.reg .b64 %rd<8>;
+
+
+ld.param.u64 %rd1, [_Z13UpdateWeightsPfPKffi_param_0];
+ld.param.u64 %rd2, [_Z13UpdateWeightsPfPKffi_param_1];
+ld.param.f32 %f1, [_Z13UpdateWeightsPfPKffi_param_2];
+ld.param.u32 %r2, [_Z13UpdateWeightsPfPKffi_param_3];
+mov.u32 %r3, %ctaid.x;
+mov.u32 %r4, %ntid.x;
+mov.u32 %r5, %tid.x;
+mad.lo.s32 %r1, %r4, %r3, %r5;
+setp.ge.s32	%p1, %r1, %r2;
+@%p1 bra BB7_2;
+
+cvta.to.global.u64 %rd3, %rd2;
+mul.wide.s32 %rd4, %r1, 4;
+add.s64 %rd5, %rd3, %rd4;
+ld.global.f32 %f2, [%rd5];
+mul.vf32 %f3, %f2, %f1;
+cvta.to.global.u64 %rd6, %rd1;
+add.s64 %rd7, %rd6, %rd4;
+ld.global.f32 %f4, [%rd7];
+sub.f32 %f5, %f4, %f3;
+st.global.f32 [%rd7], %f5;
+
+BB7_2:
+ret;
+}
+
+
+.visible .entry _Z10UpdateBiasPfPKffi(
+.param .u64 _Z10UpdateBiasPfPKffi_param_0,
+.param .u64 _Z10UpdateBiasPfPKffi_param_1,
+.param .f32 _Z10UpdateBiasPfPKffi_param_2,
+.param .u32 _Z10UpdateBiasPfPKffi_param_3
+)
+{
+.reg .pred %p<2>;
+.reg .f32 %f<6>;
+.reg .b32 %r<6>;
+.reg .b64 %rd<8>;
+
+
+ld.param.u64 %rd1, [_Z10UpdateBiasPfPKffi_param_0];
+ld.param.u64 %rd2, [_Z10UpdateBiasPfPKffi_param_1];
+ld.param.f32 %f1, [_Z10UpdateBiasPfPKffi_param_2];
+ld.param.u32 %r2, [_Z10UpdateBiasPfPKffi_param_3];
+mov.u32 %r3, %ctaid.x;
+mov.u32 %r4, %ntid.x;
+mov.u32 %r5, %tid.x;
+mad.lo.s32 %r1, %r4, %r3, %r5;
+setp.ge.s32	%p1, %r1, %r2;
+@%p1 bra BB8_2;
+
+cvta.to.global.u64 %rd3, %rd2;
+mul.wide.s32 %rd4, %r1, 4;
+add.s64 %rd5, %rd3, %rd4;
+ld.global.f32 %f2, [%rd5];
+mul.vf32 %f3, %f2, %f1;
+cvta.to.global.u64 %rd6, %rd1;
+add.s64 %rd7, %rd6, %rd4;
+ld.global.f32 %f4, [%rd7];
+sub.f32 %f5, %f4, %f3;
+st.global.f32 [%rd7], %f5;
+
+BB8_2:
+ret;
+}
+
+
+.visible .entry _Z20UpdateGradientDevicePfS_PKfS_f(
+.param .u64 _Z20UpdateGradientDevicePfS_PKfS_f_param_0,
+.param .u64 _Z20UpdateGradientDevicePfS_PKfS_f_param_1,
+.param .u64 _Z20UpdateGradientDevicePfS_PKfS_f_param_2,
+.param .u64 _Z20UpdateGradientDevicePfS_PKfS_f_param_3,
+.param .f32 _Z20UpdateGradientDevicePfS_PKfS_f_param_4
+)
+{
+
+
+
+ret;
+}
+
+

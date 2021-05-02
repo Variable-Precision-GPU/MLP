@@ -1,0 +1,41 @@
+ptxas info    : 304 bytes gmem
+ptxas info    : Compiling entry function '_Z13UpdateWeightsPfPKffi' for 'sm_60'
+ptxas info    : Function properties for _Z13UpdateWeightsPfPKffi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 7 registers, 344 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z14dJdzDerivativePfPKfS1_' for 'sm_60'
+ptxas info    : Function properties for _Z14dJdzDerivativePfPKfS1_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 344 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z14BiasDerivativePfPKfii' for 'sm_60'
+ptxas info    : Function properties for _Z14BiasDerivativePfPKfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 18 registers, 344 bytes cmem[0], 12 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z14BiasActivationPfS_PKf' for 'sm_60'
+ptxas info    : Function properties for _Z14BiasActivationPfS_PKf
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 15 registers, 344 bytes cmem[0], 32 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z20UpdateGradientDevicePfS_PKfS_f' for 'sm_60'
+ptxas info    : Function properties for _Z20UpdateGradientDevicePfS_PKfS_f
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 2 registers, 356 bytes cmem[0]
+ptxas info    : Compiling entry function '_Z20WeightBiasDerivativePfS_PKfi' for 'sm_60'
+ptxas info    : Function properties for _Z20WeightBiasDerivativePfS_PKfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 17 registers, 348 bytes cmem[0], 12 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z14dJdaChainRulesPfS_PKfS1_' for 'sm_60'
+ptxas info    : Function properties for _Z14dJdaChainRulesPfS_PKfS1_
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 18 registers, 352 bytes cmem[0], 12 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z15DivideBatchSizePfi' for 'sm_60'
+ptxas info    : Function properties for _Z15DivideBatchSizePfi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 12 registers, 332 bytes cmem[0], 12 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z7SoftmaxPfPKfii' for 'sm_60'
+ptxas info    : Function properties for _Z7SoftmaxPfPKfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 17 registers, 344 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compiling entry function '_Z10UpdateBiasPfPKffi' for 'sm_60'
+ptxas info    : Function properties for _Z10UpdateBiasPfPKffi
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 7 registers, 344 bytes cmem[0]
